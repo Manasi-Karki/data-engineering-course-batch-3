@@ -7,3 +7,4 @@ A hands-on data engineering course covering the core tools and concepts used in 
 - [Git & GitHub Basics — Pre-read](Week1/git_github_preread.html)
 - [Python Concepts — Pre-read](Week1/python_preread.html)
 - [SQL Basics — Pre-read](Week1/sql_preread.html)
+- [Assignment](Week1/assignment/README.md)
