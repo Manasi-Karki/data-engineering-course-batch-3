@@ -8,3 +8,6 @@ A hands-on data engineering course covering the core tools and concepts used in 
 - [Python Concepts — Pre-read](Week1/python_preread.html)
 - [SQL Basics — Pre-read](Week1/sql_preread.html)
 - [Assignment](Week1/assignment/README.md)
+
+## Week 2
+- [SQL string functions](Week2/week2_string_functions_cheatsheet.html)
