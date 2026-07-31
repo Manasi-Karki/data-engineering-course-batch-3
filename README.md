@@ -11,3 +11,4 @@ A hands-on data engineering course covering the core tools and concepts used in 
 
 ## Week 2
 - [SQL string functions](Week2/week2_string_functions_cheatsheet.html)
+- [SQL Joins — Pre-read](Week2/week2_joins_preread.html)
