@@ -14,3 +14,7 @@ A hands-on data engineering course covering the core tools and concepts used in 
 - [SQL Joins — Pre-read](Week2/week2_joins_preread.html)
 - [SQL Window Functions — Cheatsheet](Week2/week2_window_functions_cheatsheet.html)
 - [Assignment](Week2/assignment/README.md)
+
+## Week 3
+- [SQL Date & Time Functions — Cheatsheet](Week3/week3_datetime_functions_cheatsheet.html)
+- [Sample data setup](Week3/README.md)
