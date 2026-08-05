@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 3 Cheatsheet — SQL Date &amp; Time Functions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:      #0F1B2D;
+    --navy2:     #162236;
+    --navy3:     #1D2E47;
+    --teal:      #00C9A7;
+    --teal-bg:   rgba(0,201,167,0.10);
+    --teal-bd:   rgba(0,201,167,0.28);
+    --white:     #F0F4F8;
+    --white2:    #D8E2EE;
+    --slate:     #8899AA;
+    --slate2:    #607080;
+    --code-bg:   #111D2E;
+    --code-bd:   #243347;
+    --amber:     #FFB347;
+    --amber-bg:  rgba(255,179,71,0.10);
+    --amber-bd:  rgba(255,179,71,0.28);
+    --purple:    #BD93F9;
+    --purple-bg: rgba(189,147,249,0.10);
+    --purple-bd: rgba(189,147,249,0.28);
+  }
+
+  code, pre { font-variant-ligatures: none; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .page { max-width: 760px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--teal);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  h1 { font-size: 30px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 14px; }
+
+  h2 {
+    font-size: 19px;
+    font-weight: 600;
+    margin: 40px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  h2::before { content: ''; width: 3px; height: 18px; background: var(--teal); border-radius: 2px; flex-shrink: 0; }
+
+  p { color: var(--white2); margin-bottom: 12px; }
+  strong { color: var(--white); font-weight: 500; }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--teal);
+    background: var(--teal-bg);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
+  .intro { font-size: 16px; padding-bottom: 24px; border-bottom: 1px solid var(--code-bd); margin-bottom: 8px; }
+
+  /* ── Callout ── */
+  .callout {
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 18px 0;
+    font-size: 14px;
+    display: flex;
+    gap: 12px;
+    background: var(--teal-bg);
+    border: 1px solid var(--teal-bd);
+    color: var(--white2);
+  }
+  .callout span.ic { flex-shrink: 0; }
+  .callout strong { color: var(--white); }
+
+  /* ── Code block ── */
+  .code-wrap { background: var(--code-bg); border: 1px solid var(--code-bd); border-radius: 8px; margin: 16px 0; overflow: hidden; }
+  pre { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.7; color: var(--white); padding: 14px 16px; overflow-x: auto; }
+  .kw { color: #FF79C6; }
+  .fn { color: #50FA7B; }
+  .cm { color: #6272A4; }
+  .nm { color: #BD93F9; }
+  .st { color: #F1FA8C; }
+
+  /* ── Tabs ── */
+  .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 20px 0 22px; }
+  .tab-btn {
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 500;
+    padding: 9px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--code-bd);
+    background: var(--navy2);
+    color: var(--white2);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .tab-btn:hover { border-color: var(--teal); color: var(--white); }
+  .tab-btn.active { background: var(--teal-bg); border-color: var(--teal); color: var(--teal); }
+
+  /* ── Widget shell ── */
+  .widget { background: var(--navy2); border: 1px solid var(--code-bd); border-radius: 12px; padding: 24px; }
+  .join-detail { display: none; }
+  .join-detail.active { display: block; }
+  .join-def { font-size: 15px; color: var(--white); margin-bottom: 4px; }
+  .join-note { font-size: 12.5px; color: var(--slate); margin-bottom: 16px; }
+
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 12px; color: var(--slate); margin: 14px 0; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+  .result-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--slate); margin: 18px 0 8px; }
+  table.result { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  table.result thead tr { border-bottom: 1px solid var(--teal-bd); }
+  table.result th { padding: 8px 10px; text-align: left; font-size: 10.5px; font-weight: 600; color: var(--teal); letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap; }
+  table.result th.computed { color: var(--amber); }
+  table.result td { padding: 9px 10px; border-bottom: 1px solid var(--code-bd); color: var(--white2); white-space: nowrap; }
+  table.result td.computed { color: var(--white); font-family: 'JetBrains Mono', monospace; font-size: 12.5px; }
+  .result-row { opacity: 0; transform: translateY(6px); transition: opacity 0.3s ease, transform 0.3s ease; border-left: 3px solid transparent; }
+  .result-row.show { opacity: 1; transform: translateY(0); }
+  .result-row.grp-a { border-left-color: var(--teal); background: var(--teal-bg); }
+  .result-row.weekend { border-left-color: var(--amber); background: var(--amber-bg); }
+  .badge { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--slate); background: var(--navy3); border: 1px solid var(--code-bd); padding: 1px 7px; border-radius: 4px; }
+
+  /* ── Plain tables (reference / mistakes) ── */
+  table.plain { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13.5px; }
+  table.plain thead tr { border-bottom: 1px solid var(--teal-bd); }
+  table.plain th { padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; color: var(--teal); letter-spacing: 0.06em; text-transform: uppercase; }
+  table.plain td { padding: 10px 14px; border-bottom: 1px solid var(--code-bd); color: var(--white2); vertical-align: top; }
+  table.plain tr:last-child td { border-bottom: none; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="eyebrow">Week 3 · Cheatsheet</div>
+  <h1>SQL Date &amp; Time Functions</h1>
+  <p class="intro">
+    Almost every analytics question is a question "over time" — trips per day, busiest hour,
+    average ride duration. A timestamp column only does <strong>four</strong> jobs for you:
+    get <strong>bucketed</strong> so it's groupable, get a <strong>piece</strong> pulled out of it,
+    get <strong>formatted</strong> for a report, or get <strong>subtracted</strong> from another
+    timestamp to measure a gap. Every example below runs against a small <code>trips</code> table.
+  </p>
+
+  <h2>Four jobs, four functions</h2>
+  <table class="plain">
+    <thead><tr><th>Job</th><th>Function</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td>Bucket it</td><td><code>DATE_TRUNC(unit, ts)</code></td><td>Round down to the start of the day/week/month, so it's groupable</td></tr>
+      <tr><td>Pull a piece out</td><td><code>EXTRACT(field FROM ts)</code></td><td>Just the hour, or just the day-of-week, as a number</td></tr>
+      <tr><td>Format it</td><td><code>TO_CHAR(ts, format)</code></td><td>A display-friendly string, for a report — not for filtering</td></tr>
+      <tr><td>Measure a gap</td><td><code>ts2 - ts1</code></td><td>An <code>interval</code> between two timestamps</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Try it: same trips table, four functions</h2>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="trunc" onclick="applyTab('trunc')">DATE_TRUNC</button>
+    <button class="tab-btn" data-tab="extract" onclick="applyTab('extract')">EXTRACT</button>
+    <button class="tab-btn" data-tab="tochar" onclick="applyTab('tochar')">TO_CHAR</button>
+    <button class="tab-btn" data-tab="duration" onclick="applyTab('duration')">Duration</button>
+  </div>
+
+  <div class="widget">
+
+    <div class="join-detail active" data-tab="trunc">
+      <p class="join-def">Rounds every timestamp down to the start of its day — the standard way to make a moment in time groupable.</p>
+      <p class="join-note">Rows 1 and 2 share a day bucket — GROUP BY this column and they collapse into one count</p>
+      <div class="code-wrap"><pre><span class="kw">SELECT</span> trip_id, requested_at,
+    <span class="fn">DATE_TRUNC</span>(<span class="st">'day'</span>, requested_at) <span class="kw">AS</span> trip_day
+<span class="kw">FROM</span> trips
+<span class="kw">ORDER BY</span> trip_id;</pre></div>
+    </div>
+
+    <div class="join-detail" data-tab="extract">
+      <p class="join-def">Pulls one numeric piece out of a timestamp — an hour, a day-of-week — for bucketing or filtering.</p>
+      <p class="join-note">DOW is numbered Sunday = 0 … Saturday = 6, not Monday = 1</p>
+      <div class="code-wrap"><pre><span class="kw">SELECT</span> trip_id, requested_at,
+    <span class="fn">EXTRACT</span>(<span class="kw">HOUR FROM</span> requested_at) <span class="kw">AS</span> hour_of_day,
+    <span class="fn">EXTRACT</span>(<span class="kw">DOW FROM</span> requested_at)  <span class="kw">AS</span> day_of_week
+<span class="kw">FROM</span> trips
+<span class="kw">ORDER BY</span> trip_id;</pre></div>
+    </div>
+
+    <div class="join-detail" data-tab="tochar">
+      <p class="join-def">Formats a timestamp as a text string for display — not for filtering or grouping.</p>
+      <p class="join-note">The format string is case-sensitive with its own vocabulary (YYYY, Mon, HH12, MI…) — it isn't a general string function</p>
+      <div class="code-wrap"><pre><span class="kw">SELECT</span> trip_id, requested_at,
+    <span class="fn">TO_CHAR</span>(requested_at, <span class="st">'YYYY-MM-DD'</span>) <span class="kw">AS</span> ymd,
+    <span class="fn">TO_CHAR</span>(requested_at, <span class="st">'Mon DD, YYYY HH12:MI AM'</span>) <span class="kw">AS</span> pretty
+<span class="kw">FROM</span> trips
+<span class="kw">ORDER BY</span> trip_id;</pre></div>
+    </div>
+
+    <div class="join-detail" data-tab="duration">
+      <p class="join-def">Subtracting two timestamps gives an <code>interval</code>; converting that to seconds turns it into a plain number you can average or sum.</p>
+      <p class="join-note">Trip 4 has no completed_at — its duration is NULL, not zero</p>
+      <div class="code-wrap"><pre><span class="kw">SELECT</span> trip_id, requested_at, completed_at,
+    (completed_at <span class="kw">-</span> requested_at) <span class="kw">AS</span> trip_duration,
+    <span class="fn">ROUND</span>(
+        <span class="fn">EXTRACT</span>(<span class="kw">EPOCH FROM</span> (completed_at <span class="kw">-</span> requested_at)) <span class="kw">/</span> <span class="nm">60</span>,
+        <span class="nm">1</span>
+    ) <span class="kw">AS</span> duration_minutes
+<span class="kw">FROM</span> trips
+<span class="kw">ORDER BY</span> trip_id;</pre></div>
+    </div>
+
+    <div class="result-label">Result</div>
+    <table class="result">
+      <thead id="result-head"></thead>
+      <tbody id="result-body"></tbody>
+    </table>
+
+  </div>
+
+  <h2>Reference</h2>
+  <table class="plain">
+    <thead><tr><th>Function</th><th>Returns</th><th>Typical use</th></tr></thead>
+    <tbody>
+      <tr><td><code>DATE_TRUNC(unit, ts)</code></td><td>A timestamp rounded down to the start of that unit</td><td>Group trips by day / week / month</td></tr>
+      <tr><td><code>EXTRACT(field FROM ts)</code></td><td>A number — hour, dow, day, month, year, epoch…</td><td>Bucket by hour-of-day or day-of-week</td></tr>
+      <tr><td><code>TO_CHAR(ts, format)</code></td><td>A formatted text string</td><td>Display-friendly labels in a report</td></tr>
+      <tr><td><code>ts2 - ts1</code></td><td>An <code>interval</code></td><td>Raw duration between two timestamps</td></tr>
+      <tr><td><code>EXTRACT(EPOCH FROM interval)</code></td><td>That interval as a number of seconds</td><td>Turning a duration into minutes/hours you can average or sum</td></tr>
+      <tr><td><code>NOW() / CURRENT_DATE</code></td><td>The current timestamp / date</td><td>"As of today" filters, relative date windows</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Common mistakes</h2>
+  <table class="plain">
+    <thead><tr><th>Mistake</th><th>What goes wrong</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td><code>WHERE requested_at = '2024-03-04'</code></td><td>Matches only exact midnight — almost every row on that day is silently excluded</td><td>Use a range: <code>&gt;= '2024-03-04' AND &lt; '2024-03-05'</code></td></tr>
+      <tr><td><code>WHERE DATE(requested_at) = '2024-03-04'</code></td><td>Works, but wrapping the column in a function stops Postgres using a plain index on it</td><td>Prefer the range form, or index the expression itself</td></tr>
+      <tr><td>Assuming <code>EXTRACT(DOW ...)</code> counts Monday as 1</td><td>Postgres numbers Sunday = 0 … Saturday = 6</td><td>Check the mapping, or use <code>TO_CHAR(ts, 'Day')</code> for a name instead</td></tr>
+      <tr><td>Averaging <code>completed_at - requested_at</code> directly</td><td>That's an <code>interval</code>, not a plain number — it doesn't behave like one everywhere</td><td>Convert with <code>EXTRACT(EPOCH FROM ...)</code> before doing math</td></tr>
+      <tr><td>Forgetting a cancelled trip has <code>completed_at IS NULL</code></td><td>Any duration calculation on that row is silently <code>NULL</code></td><td>Decide on purpose whether <code>AVG()</code> skipping those rows is what you want</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <span class="ic">🎯</span>
+    <div><strong>You're ready</strong> when you can look at a raw timestamp column and know whether the question in front of you needs a bucket (<code>DATE_TRUNC</code>), a piece (<code>EXTRACT</code>), a label (<code>TO_CHAR</code>), or a gap (subtraction).</div>
+  </div>
+
+</div>
+
+<script>
+  const TABS = {
+    trunc: {
+      cols: ['trip', 'requested_at'],
+      extraCols: [{ key: 'trip_day', label: 'DATE_TRUNC(day)' }],
+      rows: [
+        { trip: 1, requested_at: '2024-03-04 08:12', group: 'a', extra: { trip_day: '2024-03-04' } },
+        { trip: 2, requested_at: '2024-03-04 21:50', group: 'a', extra: { trip_day: '2024-03-04' } },
+        { trip: 3, requested_at: '2024-03-10 14:05', extra: { trip_day: '2024-03-10' } },
+        { trip: 4, requested_at: '2024-03-15 09:00', extra: { trip_day: '2024-03-15' } },
+        { trip: 5, requested_at: '2024-04-03 19:30', extra: { trip_day: '2024-04-03' } }
+      ]
+    },
+    extract: {
+      cols: ['trip', 'requested_at'],
+      extraCols: [{ key: 'hour', label: 'EXTRACT(HOUR)' }, { key: 'dow', label: 'EXTRACT(DOW)' }],
+      rows: [
+        { trip: 1, requested_at: '2024-03-04 08:12', extra: { hour: 8, dow: '1 (Mon)' } },
+        { trip: 2, requested_at: '2024-03-04 21:50', extra: { hour: 21, dow: '1 (Mon)' } },
+        { trip: 3, requested_at: '2024-03-10 14:05', weekend: true, extra: { hour: 14, dow: '0 (Sun)' } },
+        { trip: 4, requested_at: '2024-03-15 09:00', extra: { hour: 9, dow: '5 (Fri)' } },
+        { trip: 5, requested_at: '2024-04-03 19:30', extra: { hour: 19, dow: '3 (Wed)' } }
+      ]
+    },
+    tochar: {
+      cols: ['trip', 'requested_at'],
+      extraCols: [{ key: 'ymd', label: "TO_CHAR('YYYY-MM-DD')" }, { key: 'pretty', label: "TO_CHAR('Mon DD, YYYY HH12:MI AM')" }],
+      rows: [
+        { trip: 1, requested_at: '2024-03-04 08:12', extra: { ymd: '2024-03-04', pretty: 'Mar 04, 2024 08:12 AM' } },
+        { trip: 2, requested_at: '2024-03-04 21:50', extra: { ymd: '2024-03-04', pretty: 'Mar 04, 2024 09:50 PM' } },
+        { trip: 3, requested_at: '2024-03-10 14:05', extra: { ymd: '2024-03-10', pretty: 'Mar 10, 2024 02:05 PM' } },
+        { trip: 4, requested_at: '2024-03-15 09:00', extra: { ymd: '2024-03-15', pretty: 'Mar 15, 2024 09:00 AM' } },
+        { trip: 5, requested_at: '2024-04-03 19:30', extra: { ymd: '2024-04-03', pretty: 'Apr 03, 2024 07:30 PM' } }
+      ]
+    },
+    duration: {
+      cols: ['trip', 'requested_at', 'completed_at'],
+      extraCols: [{ key: 'duration', label: 'completed_at - requested_at' }, { key: 'minutes', label: 'EPOCH / 60' }],
+      rows: [
+        { trip: 1, requested_at: '2024-03-04 08:12', completed_at: '2024-03-04 08:45', extra: { duration: '00:33:00', minutes: '33.0' } },
+        { trip: 2, requested_at: '2024-03-04 21:50', completed_at: '2024-03-04 22:10', extra: { duration: '00:20:00', minutes: '20.0' } },
+        { trip: 3, requested_at: '2024-03-10 14:05', completed_at: '2024-03-10 14:40', extra: { duration: '00:35:00', minutes: '35.0' } },
+        { trip: 4, requested_at: '2024-03-15 09:00', completed_at: null, extra: { duration: null, minutes: null } },
+        { trip: 5, requested_at: '2024-04-03 19:30', completed_at: '2024-04-03 19:52', extra: { duration: '00:22:00', minutes: '22.0' } }
+      ]
+    }
+  };
+
+  const LABELS = { trip: 'trip_id', requested_at: 'requested_at', completed_at: 'completed_at' };
+
+  function applyTab(key) {
+    const cfg = TABS[key];
+
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === key));
+    document.querySelectorAll('.join-detail').forEach(el => el.classList.toggle('active', el.dataset.tab === key));
+
+    const thead = document.getElementById('result-head');
+    const headCells = cfg.cols.map(c => '<th>' + LABELS[c] + '</th>').join('')
+      + cfg.extraCols.map(c => '<th class="computed">' + c.label + '</th>').join('');
+    thead.innerHTML = '<tr>' + headCells + '</tr>';
+
+    const tbody = document.getElementById('result-body');
+    tbody.innerHTML = '';
+    cfg.rows.forEach((row, i) => {
+      const tr = document.createElement('tr');
+      let cls = 'result-row';
+      if (row.group) cls += ' grp-' + row.group;
+      if (row.weekend) cls += ' weekend';
+      tr.className = cls;
+
+      const baseCells = cfg.cols.map(c => '<td>' + (row[c] === null ? '<span class="badge">NULL</span>' : row[c]) + '</td>').join('');
+      const extraCells = cfg.extraCols.map(c => {
+        const v = row.extra[c.key];
+        return '<td class="computed">' + (v === null ? '<span class="badge">NULL</span>' : v) + '</td>';
+      }).join('');
+
+      tr.innerHTML = baseCells + extraCells;
+      tbody.appendChild(tr);
+      setTimeout(() => tr.classList.add('show'), i * 90);
+    });
+  }
+
+  applyTab('trunc');
+</script>
+</body>
+</html>
